@@ -1,0 +1,41 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Log files
+*.log
+
+# Data and model outputs
+*.npy
+*.pt
+*.bin
+*.h5
+*.ckpt
+
+# Wandb logs
+wandb/
+
+# Huggingface cache
+~/.cache/huggingface/
+~/.huggingface/
+
+# VSCode settings
+.vscode/
+
+# Python virtual environments
+env/
+venv/
+.venv/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Test and temp files
+*.tmp
+*.temp
+*.bak
