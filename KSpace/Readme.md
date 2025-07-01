@@ -1,4 +1,4 @@
-# BaMCo KSpace
+# BaMCo - Multimodal Knowledge Space Pretraining
 
 This folder contains the source code for the BaMCo - Multimodal Knowledge Space Pretraining.
 
