@@ -6,8 +6,8 @@ import torch
 import transformers
 from transformers import AutoTokenizer, LlamaForCausalLM, GPT2Tokenizer
 from dataclasses import dataclass, field
-from dataset.multi_dataset import VQA_PathVQA_Dataset, CapDataset,  TextDatasets, UniDatasets, VQA_Slake_Dataset, VQA_VQARad_Dataset
-from model.language_model import BaMCoLlamaForCausalLM, LamedPhi3ForCausalLM, BaMCoGPT2ForCausalLM
+from dataset.multi_dataset import VQA_PathVQA_Dataset, VQA_Slake_Dataset, VQA_VQARad_Dataset
+from model.language_model import BaMCoLlamaForCausalLM, BaMCoGPT2ForCausalLM
 from train.BaMCo_VQA_trainer import BaMCoVQATrainer
 from huggingface_hub import login
 from tqdm import tqdm
@@ -25,8 +25,8 @@ torch.backends.cudnn.benchmark = False
 
 local_rank = None
 tokenizer = None
-login(token="<your HuggingFace token>") # Replace with your Hugging Face token
-wandb.login(key="<your WandB key>") # Replace with your WandB key
+login(token="<your WandB key>") # Replace with your Hugging Face token
+#wandb.login(key="<your WandB key>") # Replace with your WandB key
 
 def rank0_print(*args):
     if local_rank == 0:
@@ -36,7 +36,7 @@ def rank0_print(*args):
 class ModelArguments:
     version: Optional[str] = field(default="v0")
     model_name_or_path: Optional[str] = field(default="meta-llama/Llama-3.2-1B", metadata={"help": "Path to the LLM or MLLM."}) #"meta-llama/Llama-3.2-1B", "openai-community/gpt2-xl"
-    model_type: Optional[str] = field(default="llama3", metadata={"help": "llama3, phi3, gpt2"})
+    model_type: Optional[str] = field(default="llama3", metadata={"help": "llama3, gpt2"})
 
     freeze_backbone: bool = field(default=True)
     pretrain_mllm: Optional[str] = field(default=None)
@@ -44,7 +44,7 @@ class ModelArguments:
     tune_mm_mlp_adapter: bool = field(default=False, metadata={"help": "Used in pretrain: tune mm_projector and embed_tokens"})
     pretrain_mm_mlp_adapter: Optional[str] = field(default=None, metadata={"help": "Path to pretrained mm_projector and embed_tokens."})
 
-    eval_model_path: Optional[str] = field(default="BaMCo/VQA/src/outputs", metadata={"help": "Path to the model for evaluation."})
+    eval_model_path: Optional[str] = field(default="BaMCo/VQA/src/checkpoints", metadata={"help": "Path to the model for evaluation."})
 
     # image
     image_channel: int = field(default=3)
@@ -68,8 +68,6 @@ class ModelArguments:
     knowledge_encoder: bool = field(default=True)
     knowledge_encoder_checkpoint: Optional[str] = field(default="BaMCo/KSpace/src/checkpoints/Slake_KnowledgeSpace.pt")
     freeze_knowledge_encoder: bool = field(default=True)
-    #kg_dim: int = field(default=256)
-    #kg_pool_size: int = field(default=32)
 
     # projector
     mm_projector_type: Optional[str] = field(default='spp', metadata={"help": "spp"}) #image projection layer.
@@ -94,7 +92,7 @@ class TrainingArguments(transformers.TrainingArguments):
     # This will skip the training phase and directly evaluate the model.
     # If you want to train the model, set eval_only to False.
     # Following the training, the model will be evaluated on the test set.
-    eval_only: bool = field(default=False)
+    eval_only: bool = field(default=True)
 
     # lora
     lora_enable: bool = True
@@ -121,7 +119,7 @@ class TrainingArguments(transformers.TrainingArguments):
 
     # This is set up to facilitate debugging, pls config these in bash file in training.
     bf16: bool = True
-    output_dir: str = "BaMCo/VQA/src/outputs/Llama3.2_1B_Slake"
+    checkpoint_dir: str = "BaMCo/VQA/src/outputs/Llama3.2_1B_Slake"
     run_name: str = "Llama3.2_1B_Slake"
     num_train_epochs: float = 5
     per_device_train_batch_size: int = 100
@@ -291,11 +289,6 @@ def main():
                 bos_token_id=tokenizer.bos_token_id,
                 eos_token_id=tokenizer.eos_token_id
             )
-        elif 'phi3' in model_args.model_type:
-            model = LamedPhi3ForCausalLM.from_pretrained(
-                model_args.model_name_or_path,
-                cache_dir=training_args.cache_dir
-                )
         elif 'gpt2' in model_args.model_type:
             model = BaMCoGPT2ForCausalLM.from_pretrained(
                 model_args.model_name_or_path,
@@ -400,11 +393,11 @@ def main():
         trainer.train()
 
         rank0_print("="*20 + " Saving the Best Model " + "="*20)
-        torch.save(model.state_dict(), os.path.join(training_args.output_dir, 'pytorch_model_best.bin'))
+        torch.save(model.state_dict(), os.path.join(training_args.checkpoint_dir, 'pytorch_model_best.bin'))
 
     else: 
         rank0_print("="*20 + " Loading and Pushing to the Hub " + "="*20)
-        state_dict = torch.load(os.path.join(training_args.output_dir, 'pytorch_model_best.bin'), map_location="cuda", weights_only=True)
+        state_dict = torch.load(os.path.join(training_args.checkpoint_dir, 'pytorch_model_best.bin'), map_location="cuda", weights_only=True)
         model.load_state_dict(state_dict, strict=True)
 
         # Push the model to the Hugging Face Hub before the evaluation phase
@@ -412,7 +405,7 @@ def main():
             api.create_repo("<your_repo_name>/" + training_args.run_name, private=True)
             api.upload_file( # Upload in the background (non-blocking action)
                 repo_id="<your_repo_name>/" + training_args.run_name,
-                path_or_fileobj=os.path.join(training_args.output_dir, 'pytorch_model_best.bin'),
+                path_or_fileobj=os.path.join(training_args.checkpoint_dir, 'pytorch_model_best.bin'),
                 repo_type="model",
                 path_in_repo="pytorch_model_best.bin",
             )
@@ -421,9 +414,9 @@ def main():
         #model = LamedLlamaForCausalLM.from_pretrained("<your_repo_name>/" + training_args.run_name)
 
     rank0_print("="*20 + " Evaluate on Test Set " + "="*20)
-    evaluater(model, test_dataset, training_args, model_args, data_args)
+    evaluater(model, test_dataset, training_args, model_args)
 
-def evaluater(model, dataset, training_args, model_args, data_args):
+def evaluater(model, dataset, training_args, model_args):
     # Evaluation metrics are initialized from the Hugging Face Evaluate library
     bleu = evaluate.load("bleu")
     bertscore = evaluate.load("bertscore")
@@ -443,10 +436,10 @@ def evaluater(model, dataset, training_args, model_args, data_args):
             drop_last=False,
     )
     
-    if not os.path.exists(training_args.output_dir):
-        os.makedirs(training_args.output_dir)
+    if not os.path.exists(training_args.checkpoint_dir):
+        os.makedirs(training_args.checkpoint_dir)
     
-    eval_json_path = os.path.join(training_args.output_dir, "eval.json")
+    eval_json_path = os.path.join(training_args.checkpoint_dir, "eval.json")
 
     result_bleu = 0
     result_rouge = 0

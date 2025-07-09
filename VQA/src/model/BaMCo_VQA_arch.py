@@ -12,8 +12,7 @@ import os
 import numpy as np
 from . import loss
 
-#sys.path.append('BaMCo/VQA/src/dataset')
-from ..dataset.dataset_info import get_RAG_classes_dict 
+from dataset.dataset_info import get_RAG_classes_dict
 
 knowledge_encoder_checkpoint = None
 

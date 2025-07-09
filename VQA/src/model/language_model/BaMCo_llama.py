@@ -14,7 +14,7 @@ from ..BaMCo_VQA_arch import BaMCoMetaModel, BaMCoMetaForCausalLM
 
 
 class BaMCoConfig(LlamaConfig):
-    model_type = "lamed_llama"
+    model_type = "BaMCo_llama"
 
 
 class BaMCoLlamaModel(BaMCoMetaModel, LlamaModel):
