@@ -50,7 +50,7 @@ def main():
     device = init_distributed_device(args)
 
     args.wandb = 'wandb' in args.report_to or 'all' in args.report_to
-    args.checkpoint_path = '/mnt/storage1/ziya/BaMCo/KSpace/src/checkpoints/BiomedCLIP_VQARAD'
+    args.checkpoint_path = 'BaMCo/KSpace/src/checkpoints'
 
     #if not exist
     if not os.path.exists(args.checkpoint_path):

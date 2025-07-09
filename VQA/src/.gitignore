@@ -22,6 +22,7 @@ wandb/
 # Huggingface cache
 ~/.cache/huggingface/
 ~/.huggingface/
+cache/
 
 # VSCode settings
 .vscode/

@@ -25,7 +25,7 @@ torch.backends.cudnn.benchmark = False
 
 local_rank = None
 tokenizer = None
-login(token="<your WandB key>") # Replace with your Hugging Face token
+login(token="<your HF token>") # Replace with your Hugging Face token
 #wandb.login(key="<your WandB key>") # Replace with your WandB key
 
 def rank0_print(*args):
