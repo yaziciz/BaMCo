@@ -20,9 +20,9 @@ conda env create -f environment.yml
 conda activate bamco
 ```
 
-### 3. Prepare Datasetsß
+### 3. Prepare Datasets
 
-- Place your datasets under the appropriate folders in `KSpace/Datasets/` or use the predefined datasets, Slake, PathVQA and VQA-RAD.
+- Place your datasets under the appropriate folders in `KSpace/Datasets/` or use the predefined datasets, Slake, PathVQA, and VQA-RAD.
 
 ### 4. Download Model Weights
 
