@@ -67,6 +67,7 @@ nlp = spacy.load("en_core_sci_sm")
 
 # Define split paths, replace with your actual paths
 # The dataset can be downloaded from here: https://huggingface.co/datasets/BoKelvin/SLAKE
+# The images should be downloaded seperately from the files section of the given repository above.
 split_paths = {
     "train": "BaMCo/Datasets/Slake1.0/train.json",
     "test": "BaMCo/Datasets/Slake1.0/test.json",
@@ -103,5 +104,5 @@ for split_name, split_path in split_paths.items():
             })
 
     # Save the knowledge graph data for this split
-    with open(f'KG_SLAKE_{split_name}.json', 'w') as f:
+    with open(f'KG_Slake_{split_name}.json', 'w') as f:
         json.dump(data, f, indent=4)
