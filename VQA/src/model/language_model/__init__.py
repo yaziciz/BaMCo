@@ -1,0 +1,2 @@
+from .BaMCo_llama import BaMCoLlamaForCausalLM
+from .BaMCo_gpt2 import BaMCoGPT2ForCausalLM
