@@ -1,10 +1,10 @@
-# 🧠 BaMCo: Balanced Multimodal Contrastive Learning for Knowledge-Driven Medical VQA
+# BaMCo: Balanced Multimodal Contrastive Learning for Knowledge-Driven Medical VQA
 
 Welcome to **BaMCo**, a novel framework for multimodal, knowledge-driven biomedical Visual Question Answering. This repository contains the implementation of the paper, BaMCo, accepted to MICCAI 2025.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the Repository
 
@@ -42,7 +42,7 @@ conda activate bamco
 
 ---
 
-## 🏗️ Main Components
+## Main Components
 
 - **KSpace:**  
   Scripts for constructing and encoding biomedical knowledge sources.
@@ -55,7 +55,7 @@ conda activate bamco
 
 ---
 
-## 📝 Citation
+## Citation
 
 We appreciate your interest! If you use or refer to BaMCo in your research, please cite us:
 The citation will be updated soon!
@@ -71,7 +71,7 @@ The citation will be updated soon!
 
 ---
 
-## 📬 Contact
+## Contact
 
 For questions, issues, or contributions, please open an issue or pull request on GitHub.
 
