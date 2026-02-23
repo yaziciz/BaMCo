@@ -68,11 +68,3 @@ The citation will be updated soon!
   year      = {2025}
 }
 ```
-
----
-
-## Contact
-
-For questions, issues, or contributions, please open an issue or pull request on GitHub.
-
----
